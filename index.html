@@ -318,687 +318,174 @@ Download ASCII Text
 </div>
 
 <script>
-const video = document.getElementById("webcamVideo");
-const canvas = document.getElementById("processingCanvas");
-const ctx = canvas.getContext("2d", {
-    willReadFrequently: true
-});
+        const video = document.getElementById('webcamVideo');
+        const canvas = document.getElementById('processingCanvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const asciiContainer = document.getElementById('asciiContainer');
+        const streamPlaceholder = document.getElementById('streamPlaceholder');
+        const snapshotModal = document.getElementById('snapshotModal');
+        const snapshotPreview = document.getElementById('snapshotPreview');
 
-const asciiContainer = document.getElementById("asciiContainer");
-const streamPlaceholder = document.getElementById("streamPlaceholder");
-const snapshotModal = document.getElementById("snapshotModal");
-const snapshotPreview = document.getElementById("snapshotPreview");
-const toggleCamBtn = document.getElementById("toggleCamBtn");
-const camBtnText = document.getElementById("camBtnText");
-const statusText = document.getElementById("statusText");
-const fpsCounter = document.getElementById("fpsCounter");
+        let streaming = false;
+        let animationFrameId;
+        let cols = 120;
+        let charRamp = "Ñ@#W$9876543210?!abc;:+=-,._ ";
+        let lastTime = performance.now();
+        let frameCount = 0;
+        let currentSnapshotText = "";
+        let frozenSnapshotText = ""; // Zamrznuti kadar u trenutku hvatanja
 
-let currentStream = null;
-let streaming = false;
-let cameraBusy = false;
-let animationFrameId = null;
-let cameraSession = 0;
-let cols = 120;
-let frameCount = 0;
-let lastTime = performance.now();
-let currentSnapshotText = "";
+        const palettes = {
+            matrix: { text: '#00ff66', bg: '#050505' },
+            amber: { text: '#ffb000', bg: '#050300' },
+            cyan: { text: '#00f0ff', bg: '#000305' }
+        };
 
-const charRamp = "Ñ@#W$9876543210?!abc;:+=-,._ ";
-
-const palettes = {
-    matrix: {
-        text: "#00ff66",
-        bg: "#050505"
-    },
-
-    amber: {
-        text: "#ffb000",
-        bg: "#050300"
-    },
-
-    cyan: {
-        text: "#00f0ff",
-        bg: "#000305"
-    }
-};
-
-function sleep(ms) {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
-}
-
-function setStatus(text) {
-    statusText.innerText = "STATUS: " + text;
-}
-
-function changePalette() {
-    const value = document.getElementById("paletteSelect").value;
-    const palette = palettes[value];
-
-    asciiContainer.style.color = palette.text;
-    document.body.style.backgroundColor = palette.bg;
-}
-
-function changeResolution() {
-    cols = parseInt(
-        document.getElementById("resolutionSelect").value
-    );
-
-    document.getElementById("resolutionDisplay").innerText =
-        `GRID: ${cols} cols`;
-}
-
-async function getCameras() {
-    if (
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices.enumerateDevices
-    ) {
-        throw new Error("Camera API is unavailable");
-    }
-
-    const devices =
-        await navigator.mediaDevices.enumerateDevices();
-
-    const cameras =
-        devices.filter(
-            device => device.kind === "videoinput"
-        );
-
-    console.log("Detected cameras:", cameras);
-
-    return cameras;
-}
-
-async function stopCamera() {
-    cameraSession++;
-    streaming = false;
-
-    if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
-
-    const oldStream = currentStream;
-
-    currentStream = null;
-
-    if (oldStream) {
-        const tracks = oldStream.getTracks();
-
-        tracks.forEach(track => {
-            track.onended = null;
-            track.onmute = null;
-            track.stop();
-        });
-    }
-
-    if (video.srcObject) {
-        video.srcObject = null;
-    }
-
-    try {
-        video.pause();
-    } catch (error) {
-        console.warn("Video pause error:", error);
-    }
-
-    asciiContainer.innerText = "";
-    fpsCounter.innerText = "FPS: 0";
-    camBtnText.innerText = "Initialize Camera";
-    streamPlaceholder.style.display = "flex";
-
-    setStatus("WAITING_FOR_INPUT");
-
-    await sleep(800);
-}
-
-function waitForVideo() {
-    return new Promise((resolve, reject) => {
-
-        if (
-            video.readyState >= 1 &&
-            video.videoWidth > 0
-        ) {
-            resolve();
-            return;
+        function changePalette() {
+            const val = document.getElementById('paletteSelect').value;
+            const p = palettes[val];
+            asciiContainer.style.color = p.text;
+            document.body.style.backgroundColor = p.bg;
         }
 
-        let timeout;
-
-        function cleanup() {
-            video.removeEventListener(
-                "loadedmetadata",
-                success
-            );
-
-            video.removeEventListener(
-                "error",
-                failure
-            );
-
-            clearTimeout(timeout);
+        function changeResolution() {
+            cols = parseInt(document.getElementById('resolutionSelect').value);
+            document.getElementById('resolutionDisplay').innerText = `GRID: ${cols} cols`;
         }
 
-        function success() {
-            cleanup();
-            resolve();
-        }
+        async function toggleCamera() {
+            if (!streaming) {
+                try {
+                    let stream = null;
+                    document.getElementById('statusText').innerText = 'STATUS: REQUESTING_PERMISSION...';
+                    
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({ 
+                            video: { width: { ideal: 640 }, height: { ideal: 480 } }, 
+                            audio: false 
+                        });
+                    } catch (err1) {
+                        console.warn("Ideal constraints failed, attempting fallback to basic video stream...", err1);
+                        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    }
 
-        function failure() {
-            cleanup();
+                    video.srcObject = stream;
+                    
+                    await video.play().catch(async () => {
+                        await new RegExp('x').test(window.location.href);
+                        await video.play();
+                    });
 
-            reject(
-                new Error(
-                    "Video failed to initialize"
-                )
-            );
-        }
-
-        video.addEventListener(
-            "loadedmetadata",
-            success
-        );
-
-        video.addEventListener(
-            "error",
-            failure
-        );
-
-        timeout = setTimeout(() => {
-
-            cleanup();
-
-            reject(
-                new Error(
-                    "Camera startup timed out"
-                )
-            );
-
-        }, 8000);
-    });
-}
-
-async function startCamera() {
-
-    const session = ++cameraSession;
-
-    setStatus("CHECKING_CAMERA...");
-
-    const cameras = await getCameras();
-
-    if (cameras.length === 0) {
-        throw new DOMException(
-            "No camera detected",
-            "NotFoundError"
-        );
-    }
-
-    console.log(`Found ${cameras.length} camera(s)`);
-
-    if (currentStream) {
-        await stopCamera();
-    }
-
-    await sleep(500);
-
-    let lastError = null;
-
-    for (let attempt = 1; attempt <= 3; attempt++) {
-
-        if (session !== cameraSession) {
-            console.log("Camera request cancelled");
-            return;
-        }
-
-        try {
-
-            setStatus(
-                `STARTING_CAMERA... [${attempt}/3]`
-            );
-
-            const stream =
-                await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        width: {
-                            ideal: 640
-                        },
-                        height: {
-                            ideal: 480
-                        }
-                    },
-                    audio: false
-                });
-
-            if (session !== cameraSession) {
-
-                console.log(
-                    "Old camera request returned late"
-                );
-
-                stream
-                    .getTracks()
-                    .forEach(track => track.stop());
-
-                return;
-            }
-
-            const tracks = stream.getVideoTracks();
-
-            if (tracks.length === 0) {
-
-                stream
-                    .getTracks()
-                    .forEach(track => track.stop());
-
-                throw new DOMException(
-                    "No video track",
-                    "NotFoundError"
-                );
-            }
-
-            console.log(
-                "Using camera:",
-                tracks[0].label
-            );
-
-            currentStream = stream;
-
-            tracks[0].onended = () => {
-
-                if (
-                    stream === currentStream &&
-                    streaming
-                ) {
-
-                    console.warn(
-                        "Camera unexpectedly disconnected"
-                    );
-
-                    stopCamera();
-
-                    setStatus(
-                        "CAMERA_DISCONNECTED"
-                    );
+                    streaming = true;
+                    streamPlaceholder.style.display = 'none';
+                    document.getElementById('camBtnText').innerText = 'Disconnect Camera';
+                    document.getElementById('statusText').innerText = 'STATUS: STREAM_ACTIVE [OK]';
+                    requestAnimationFrame(processFrame);
+                } catch (err) {
+                    console.error("Camera acquisition error:", err);
+                    document.getElementById('statusText').innerText = 'STATUS: PERMISSION_ERROR';
+                    alert('Could not initialize camera. Please check browser permissions or ensure no other application is locking the webcam.');
                 }
-            };
+            } else {
+                stopCamera();
+            }
+        }
 
-            video.srcObject = stream;
+        function stopCamera() {
+            if (video.srcObject) {
+                let tracks = video.srcObject.getTracks();
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            cancelAnimationFrame(animationFrameId);
+            streaming = false;
+            streamPlaceholder.style.display = 'flex';
+            asciiContainer.innerText = '';
+            document.getElementById('camBtnText').innerText = 'Initialize Camera';
+            document.getElementById('statusText').innerText = 'STATUS: WAITING_FOR_INPUT';
+        }
 
-            await waitForVideo();
+        function processFrame() {
+            if (!streaming) return;
 
-            if (session !== cameraSession) {
+            const now = performance.now();
+            frameCount++;
+            if (now - lastTime >= 1000) {
+                document.getElementById('fpsCounter').innerText = `FPS: ${Math.round((frameCount * 1000) / (now - lastTime))}`;
+                frameCount = 0;
+                lastTime = now;
+            }
 
-                stream
-                    .getTracks()
-                    .forEach(track => track.stop());
+            const videoWidth = video.videoWidth || 640;
+            const videoHeight = video.videoHeight || 480;
+            const aspectRatio = videoHeight / videoWidth;
+            const rows = Math.round(cols * aspectRatio * 0.55);
 
+            canvas.width = cols;
+            canvas.height = rows;
+
+            ctx.drawImage(video, 0, 0, cols, rows);
+            const imgData = ctx.getImageData(0, 0, cols, rows).data;
+
+            let asciiString = "";
+
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    const offset = (y * cols + x) * 4;
+                    const r = imgData[offset];
+                    const g = imgData[offset + 1];
+                    const b = imgData[offset + 2];
+
+                    const avg = (0.299 * r + 0.587 * g + 0.114 * b);
+                    const charIndex = Math.floor((avg / 255) * (charRamp.length - 1));
+                    asciiString += charRamp[charIndex];
+                }
+                asciiString += "\n";
+            }
+
+            currentSnapshotText = asciiString;
+            asciiContainer.innerText = asciiString;
+
+            animationFrameId = requestAnimationFrame(processFrame);
+        }
+
+        function takeSnapshot() {
+            if (!streaming) {
+                alert('Please initialize camera first before capturing frames.');
                 return;
             }
-
-            await video.play();
-
-            await sleep(300);
-
-            if (
-                video.videoWidth === 0 ||
-                video.videoHeight === 0
-            ) {
-                throw new Error(
-                    "Camera started but returned no video dimensions"
-                );
-            }
-
-            streaming = true;
-
-            streamPlaceholder.style.display = "none";
-
-            camBtnText.innerText =
-                "Disconnect Camera";
-
-            setStatus("STREAM_ACTIVE [OK]");
-
-            frameCount = 0;
-            lastTime = performance.now();
-
-            animationFrameId =
-                requestAnimationFrame(processFrame);
-
-            return;
-
-        } catch (error) {
-
-            lastError = error;
-
-            console.warn(
-                `Camera attempt ${attempt} failed:`,
-                error
-            );
-
-            if (currentStream) {
-
-                currentStream
-                    .getTracks()
-                    .forEach(track => track.stop());
-
-                currentStream = null;
-            }
-
-            video.srcObject = null;
-
-            if (
-                error.name === "NotAllowedError"
-            ) {
-                throw error;
-            }
-
-            if (
-                error.name === "NotFoundError"
-            ) {
-                throw error;
-            }
-
-            if (attempt < 3) {
-
-                setStatus(
-                    `CAMERA_BUSY_RETRYING... [${attempt}/3]`
-                );
-
-                await sleep(1500);
-            }
-        }
-    }
-
-    throw lastError;
-}
-
-async function toggleCamera() {
-
-    if (cameraBusy) {
-
-        console.log(
-            "Camera operation already running"
-        );
-
-        return;
-    }
-
-    cameraBusy = true;
-    toggleCamBtn.disabled = true;
-
-    try {
-
-        if (
-            streaming ||
-            currentStream
-        ) {
-
-            setStatus(
-                "DISCONNECTING_CAMERA..."
-            );
-
-            await stopCamera();
-
-            await sleep(700);
-
-            return;
+            // Zamrzavanje trenutnog stanja teksta
+            frozenSnapshotText = currentSnapshotText;
+            snapshotPreview.innerText = frozenSnapshotText;
+            snapshotModal.classList.remove('hidden');
         }
 
-        await startCamera();
-
-    } catch (error) {
-
-        console.error(
-            "Camera error:",
-            error
-        );
-
-        await stopCamera();
-
-        if (
-            error.name === "NotAllowedError"
-        ) {
-
-            setStatus("PERMISSION_DENIED");
-
-            alert(
-                "Camera permission was denied. Allow camera access and try again."
-            );
-
-        } else if (
-            error.name === "NotFoundError"
-        ) {
-
-            setStatus("NO_CAMERA_FOUND");
-
-            alert(
-                "No webcam was detected."
-            );
-
-        } else if (
-            error.name === "NotReadableError"
-        ) {
-
-            setStatus("CAMERA_BUSY");
-
-            alert(
-                "The webcam could not be started. Another application may be using it. Close Discord, OBS, Zoom, Teams, Camera, etc and try again."
-            );
-
-        } else if (
-            error.name === "SecurityError"
-        ) {
-
-            setStatus("SECURITY_ERROR");
-
-            alert(
-                "The browser blocked camera access. Make sure the website is using HTTPS."
-            );
-
-        } else {
-
-            setStatus("CAMERA_ERROR");
-
-            alert(
-                "Camera error: " +
-                (error.message || error)
-            );
+        function closeSnapshotModal() {
+            snapshotModal.classList.add('hidden');
         }
 
-    } finally {
-
-        await sleep(500);
-
-        cameraBusy = false;
-        toggleCamBtn.disabled = false;
-    }
-}
-
-function processFrame() {
-
-    if (
-        !streaming ||
-        !currentStream
-    ) {
-        return;
-    }
-
-    if (
-        video.videoWidth === 0 ||
-        video.videoHeight === 0
-    ) {
-
-        animationFrameId =
-            requestAnimationFrame(processFrame);
-
-        return;
-    }
-
-    const now = performance.now();
-
-    frameCount++;
-
-    if (now - lastTime >= 1000) {
-
-        const fps =
-            Math.round(
-                (frameCount * 1000) /
-                (now - lastTime)
-            );
-
-        fpsCounter.innerText =
-            `FPS: ${fps}`;
-
-        frameCount = 0;
-        lastTime = now;
-    }
-
-    const width = video.videoWidth;
-    const height = video.videoHeight;
-
-    const aspectRatio = height / width;
-
-    const rows =
-        Math.max(
-            1,
-            Math.round(
-                cols *
-                aspectRatio *
-                0.55
-            )
-        );
-
-    canvas.width = cols;
-    canvas.height = rows;
-
-    ctx.drawImage(
-        video,
-        0,
-        0,
-        cols,
-        rows
-    );
-
-    const image =
-        ctx.getImageData(
-            0,
-            0,
-            cols,
-            rows
-        ).data;
-
-    let ascii = "";
-
-    for (let y = 0; y < rows; y++) {
-
-        for (let x = 0; x < cols; x++) {
-
-            const index =
-                (y * cols + x) * 4;
-
-            const r = image[index];
-            const g = image[index + 1];
-            const b = image[index + 2];
-
-            const brightness =
-                0.299 * r +
-                0.587 * g +
-                0.114 * b;
-
-            const charIndex =
-                Math.floor(
-                    (brightness / 255) *
-                    (charRamp.length - 1)
-                );
-
-            ascii += charRamp[charIndex];
+        function downloadSnapshot() {
+            // Preuzima se zamrznuti kadar umjesto živog s kamere
+            const blob = new Blob([frozenSnapshotText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ascii-snapshot-${Date.now()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
-        ascii += "\n";
-    }
-
-    currentSnapshotText = ascii;
-    asciiContainer.innerText = ascii;
-
-    animationFrameId =
-        requestAnimationFrame(processFrame);
-}
-
-function takeSnapshot() {
-
-    if (!streaming) {
-
-        alert(
-            "Please initialize the camera first."
-        );
-
-        return;
-    }
-
-    snapshotPreview.innerText =
-        currentSnapshotText;
-
-    snapshotModal.classList.remove(
-        "hidden"
-    );
-}
-
-function closeSnapshotModal() {
-
-    snapshotModal.classList.add(
-        "hidden"
-    );
-}
-
-function downloadSnapshot() {
-
-    const blob =
-        new Blob(
-            [currentSnapshotText],
-            {
-                type: "text/plain"
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
             }
-        );
-
-    const url =
-        URL.createObjectURL(blob);
-
-    const link =
-        document.createElement("a");
-
-    link.href = url;
-
-    link.download =
-        `ascii-snapshot-${Date.now()}.txt`;
-
-    document.body.appendChild(link);
-
-    link.click();
-
-    link.remove();
-
-    URL.revokeObjectURL(url);
-}
-
-function toggleFullscreen() {
-
-    if (!document.fullscreenElement) {
-
-        document.documentElement
-            .requestFullscreen()
-            .catch(
-                error =>
-                    console.error(
-                        "Fullscreen error:",
-                        error
-                    )
-            );
-
-    } else {
-
-        document.exitFullscreen();
-    }
-}
+        }
 
 if (
     navigator.mediaDevices &&
