@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cam2Text-Turn Webcam into ASCII Art</title>
+    <title>Cam2Text - Turn Webcam into ASCII Art</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -23,301 +25,1006 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+          rel="stylesheet">
+
     <style>
-        body { font-family: 'JetBrains Mono', monospace; }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
         .crt-scanline {
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background:
+                linear-gradient(
+                    rgba(18, 16, 16, 0) 50%,
+                    rgba(0, 0, 0, 0.25) 50%
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255, 0, 0, 0.06),
+                    rgba(0, 255, 0, 0.02),
+                    rgba(0, 0, 255, 0.06)
+                );
+
             background-size: 100% 4px, 6px 100%;
             pointer-events: none;
         }
+
         .ascii-output {
             line-height: 0.55;
             letter-spacing: -0.05em;
             font-size: 7px;
             white-space: pre;
         }
+
         @media (min-width: 768px) {
-            .ascii-output { font-size: 8.5px; }
+            .ascii-output {
+                font-size: 8.5px;
+            }
         }
     </style>
 </head>
+
 <body class="bg-terminal-bg text-terminal-green min-h-screen flex flex-col justify-between selection:bg-terminal-green selection:text-black overflow-x-hidden">
 
     <div class="fixed inset-0 crt-scanline z-45 pointer-events-none"></div>
 
     <header class="relative z-50 border-b border-terminal-green/20 bg-terminal-card/80 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
             <div class="flex items-center space-x-3">
+
                 <div class="w-8 h-8 rounded border border-terminal-green/50 flex items-center justify-center bg-terminal-green/10 text-terminal-green animate-pulse">
                     <i class="fa-solid fa-terminal text-xs"></i>
                 </div>
+
                 <div>
-                    <span class="font-bold tracking-wider text-sm sm:text-base">Cam2Text</span>
-                    <span class="block text-[9px] text-terminal-green/60 tracking-widest uppercase">Turn Webcam into ASCII Art</span>
+                    <span class="font-bold tracking-wider text-sm sm:text-base">
+                        Cam2Text
+                    </span>
+
+                    <span class="block text-[9px] text-terminal-green/60 tracking-widest uppercase">
+                        Turn Webcam into ASCII Art
+                    </span>
                 </div>
+
             </div>
 
             <div class="flex items-center space-x-3 text-xs">
+
                 <div class="hidden sm:flex items-center space-x-2 bg-terminal-green/10 border border-terminal-green/30 px-3 py-1 rounded">
                     <span class="w-2 h-2 rounded-full bg-terminal-green animate-ping"></span>
-                    <span id="fpsCounter" class="font-bold">FPS: 30</span>
+                    <span id="fpsCounter" class="font-bold">
+                        FPS: 0
+                    </span>
                 </div>
-                <button onclick="toggleFullscreen()" class="p-2 border border-terminal-green/30 hover:bg-terminal-green/20 rounded transition-colors">
+
+                <button
+                    onclick="toggleFullscreen()"
+                    class="p-2 border border-terminal-green/30 hover:bg-terminal-green/20 rounded transition-colors">
+
                     <i class="fa-solid fa-expand"></i>
+
                 </button>
+
             </div>
         </div>
     </header>
 
+
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col justify-center items-center relative z-10">
-        
+
         <div class="w-full max-w-5xl space-y-4">
-            
+
             <div class="flex flex-wrap items-center justify-between gap-3 bg-terminal-card border border-terminal-green/30 p-3 rounded-lg text-xs">
+
                 <div class="flex flex-wrap items-center gap-2">
-                    <button id="toggleCamBtn" onclick="toggleCamera()" class="px-4 py-2 bg-terminal-green text-black font-bold rounded hover:bg-terminal-green/80 transition-all flex items-center space-x-2">
+
+                    <button
+                        id="toggleCamBtn"
+                        onclick="toggleCamera()"
+                        class="px-4 py-2 bg-terminal-green text-black font-bold rounded hover:bg-terminal-green/80 transition-all flex items-center space-x-2">
+
                         <i class="fa-solid fa-power-off"></i>
-                        <span id="camBtnText">Initialize Camera</span>
+
+                        <span id="camBtnText">
+                            Initialize Camera
+                        </span>
+
                     </button>
-                    <button onclick="takeSnapshot()" class="px-4 py-2 border border-terminal-green/40 hover:bg-terminal-green/20 rounded font-semibold transition-all flex items-center space-x-2">
+
+
+                    <button
+                        onclick="takeSnapshot()"
+                        class="px-4 py-2 border border-terminal-green/40 hover:bg-terminal-green/20 rounded font-semibold transition-all flex items-center space-x-2">
+
                         <i class="fa-solid fa-camera"></i>
-                        <span>Capture Frame</span>
+
+                        <span>
+                            Capture Frame
+                        </span>
+
                     </button>
+
                 </div>
+
 
                 <div class="flex flex-wrap items-center gap-3">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-terminal-green/70">Palette:</span>
-                        <select id="paletteSelect" onchange="changePalette()" class="bg-black border border-terminal-green/40 text-terminal-green rounded px-2 py-1 focus:outline-none">
-                            <option value="matrix">Matrix Green</option>
-                            <option value="amber">Cyber Amber</option>
-                            <option value="cyan">Neon Cyan</option>
-                        </select>
-                    </div>
 
                     <div class="flex items-center space-x-2">
-                        <span class="text-terminal-green/70">Detail:</span>
-                        <select id="resolutionSelect" onchange="changeResolution()" class="bg-black border border-terminal-green/40 text-terminal-green rounded px-2 py-1 focus:outline-none">
-                            <option value="80">Standard (80 cols)</option>
-                            <option value="120" selected>High (120 cols)</option>
-                            <option value="160">Ultra (160 cols)</option>
+
+                        <span class="text-terminal-green/70">
+                            Palette:
+                        </span>
+
+                        <select
+                            id="paletteSelect"
+                            onchange="changePalette()"
+                            class="bg-black border border-terminal-green/40 text-terminal-green rounded px-2 py-1 focus:outline-none">
+
+                            <option value="matrix">
+                                Matrix Green
+                            </option>
+
+                            <option value="amber">
+                                Cyber Amber
+                            </option>
+
+                            <option value="cyan">
+                                Neon Cyan
+                            </option>
+
                         </select>
+
                     </div>
+
+
+                    <div class="flex items-center space-x-2">
+
+                        <span class="text-terminal-green/70">
+                            Detail:
+                        </span>
+
+                        <select
+                            id="resolutionSelect"
+                            onchange="changeResolution()"
+                            class="bg-black border border-terminal-green/40 text-terminal-green rounded px-2 py-1 focus:outline-none">
+
+                            <option value="80">
+                                Standard (80 cols)
+                            </option>
+
+                            <option value="120" selected>
+                                High (120 cols)
+                            </option>
+
+                            <option value="160">
+                                Ultra (160 cols)
+                            </option>
+
+                        </select>
+
+                    </div>
+
                 </div>
+
             </div>
+
 
             <div class="relative bg-black border-2 border-terminal-green/50 rounded-xl overflow-hidden shadow-2xl shadow-terminal-green/10 p-4 flex items-center justify-center min-h-[420px]">
-                
-                <video id="webcamVideo" autoplay playsinline muted class="hidden"></video>
-                <canvas id="processingCanvas" class="hidden"></canvas>
 
-                <div id="streamPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-black/90 z-20">
+                <video
+                    id="webcamVideo"
+                    autoplay
+                    playsinline
+                    muted
+                    class="hidden">
+                </video>
+
+                <canvas
+                    id="processingCanvas"
+                    class="hidden">
+                </canvas>
+
+
+                <div
+                    id="streamPlaceholder"
+                    class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-black/90 z-20">
+
                     <div class="w-16 h-16 rounded-full border border-terminal-green/40 flex items-center justify-center mb-4 text-terminal-green/60 animate-bounce">
+
                         <i class="fa-solid fa-video text-2xl"></i>
+
                     </div>
-                    <h2 class="text-lg font-bold tracking-wider mb-2">Webcam Feed Disconnected</h2>
-                    <p class="text-xs text-terminal-green/70 max-w-sm mb-4">Click "Initialize Camera" above to stream your live video feed converted into real-time ASCII text matrices.</p>
-                    <span class="text-[10px] text-terminal-green/40 font-mono tracking-widest">SECURE CLIENT-SIDE PROCESSING // NO DATA LEAVES BROWSER</span>
+
+                    <h2 class="text-lg font-bold tracking-wider mb-2">
+                        Webcam Feed Disconnected
+                    </h2>
+
+                    <p class="text-xs text-terminal-green/70 max-w-sm mb-4">
+                        Click "Initialize Camera" above to stream your live video feed converted into real-time ASCII text matrices.
+                    </p>
+
+                    <span class="text-[10px] text-terminal-green/40 font-mono tracking-widest">
+                        SECURE CLIENT-SIDE PROCESSING // NO DATA LEAVES BROWSER
+                    </span>
+
                 </div>
 
-                <div id="asciiContainer" class="ascii-output font-mono text-center select-none overflow-hidden transition-colors duration-300"></div>
+
+                <div
+                    id="asciiContainer"
+                    class="ascii-output font-mono text-center select-none overflow-hidden transition-colors duration-300">
+                </div>
+
             </div>
 
+
             <div class="flex justify-between items-center text-[10px] text-terminal-green/60 px-1 font-mono">
-                <div id="statusText">STATUS: WAITING_FOR_INPUT</div>
-                <div id="resolutionDisplay">GRID: 120x60</div>
+
+                <div id="statusText">
+                    STATUS: WAITING_FOR_INPUT
+                </div>
+
+                <div id="resolutionDisplay">
+                    GRID: 120x60
+                </div>
+
             </div>
 
         </div>
 
     </main>
 
+
     <footer class="relative z-50 border-t border-terminal-green/20 bg-terminal-card/80 py-4 text-center text-[10px] text-terminal-green/50 tracking-wider">
-        <p>&copy; 2026 Cam2Text. All rights reserved.</p>
+
+        <p>
+            &copy; 2026 Cam2Text. All rights reserved.
+        </p>
+
     </footer>
 
-    <div id="snapshotModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+
+    <div
+        id="snapshotModal"
+        class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+
         <div class="bg-terminal-card border border-terminal-green/50 p-6 rounded-xl max-w-2xl w-full space-y-4">
+
             <div class="flex justify-between items-center border-b border-terminal-green/20 pb-3">
-                <h3 class="font-bold text-sm tracking-wide">Captured ASCII Frame</h3>
-                <button onclick="closeSnapshotModal()" class="text-terminal-green/70 hover:text-terminal-green"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+                <h3 class="font-bold text-sm tracking-wide">
+                    Captured ASCII Frame
+                </h3>
+
+                <button
+                    onclick="closeSnapshotModal()"
+                    class="text-terminal-green/70 hover:text-terminal-green">
+
+                    <i class="fa-solid fa-xmark text-lg"></i>
+
+                </button>
+
             </div>
+
+
             <div class="bg-black p-3 rounded border border-terminal-green/30 overflow-x-auto max-h-72 flex justify-center">
-                <pre id="snapshotPreview" class="ascii-output"></pre>
+
+                <pre
+                    id="snapshotPreview"
+                    class="ascii-output">
+                </pre>
+
             </div>
+
+
             <div class="flex justify-end space-x-3">
-                <button onclick="downloadSnapshot()" class="px-4 py-2 bg-terminal-green text-black font-bold rounded text-xs hover:bg-terminal-green/80 transition-all">Download ASCII Text</button>
+
+                <button
+                    onclick="downloadSnapshot()"
+                    class="px-4 py-2 bg-terminal-green text-black font-bold rounded text-xs hover:bg-terminal-green/80 transition-all">
+
+                    Download ASCII Text
+
+                </button>
+
             </div>
+
         </div>
+
     </div>
 
+
     <script>
+
         const video = document.getElementById('webcamVideo');
         const canvas = document.getElementById('processingCanvas');
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        const asciiContainer = document.getElementById('asciiContainer');
-        const streamPlaceholder = document.getElementById('streamPlaceholder');
-        const snapshotModal = document.getElementById('snapshotModal');
-        const snapshotPreview = document.getElementById('snapshotPreview');
+        const ctx = canvas.getContext('2d', {
+            willReadFrequently: true
+        });
+
+        const asciiContainer =
+            document.getElementById('asciiContainer');
+
+        const streamPlaceholder =
+            document.getElementById('streamPlaceholder');
+
+        const snapshotModal =
+            document.getElementById('snapshotModal');
+
+        const snapshotPreview =
+            document.getElementById('snapshotPreview');
+
 
         let streaming = false;
-        let animationFrameId;
+        let animationFrameId = null;
+
         let cols = 120;
-        let charRamp = "Ñ@#W$9876543210?!abc;:+=-,._ ";
+
+        let charRamp =
+            "Ñ@#W$9876543210?!abc;:+=-,._ ";
+
         let lastTime = performance.now();
+
         let frameCount = 0;
+
         let currentSnapshotText = "";
 
+
         const palettes = {
-            matrix: { text: '#00ff66', bg: '#050505' },
-            amber: { text: '#ffb000', bg: '#050300' },
-            cyan: { text: '#00f0ff', bg: '#000305' }
+
+            matrix: {
+                text: '#00ff66',
+                bg: '#050505'
+            },
+
+            amber: {
+                text: '#ffb000',
+                bg: '#050300'
+            },
+
+            cyan: {
+                text: '#00f0ff',
+                bg: '#000305'
+            }
+
         };
 
+
         function changePalette() {
-            const val = document.getElementById('paletteSelect').value;
+
+            const val =
+                document.getElementById('paletteSelect').value;
+
             const p = palettes[val];
+
             asciiContainer.style.color = p.text;
+
             document.body.style.backgroundColor = p.bg;
+
         }
+
 
         function changeResolution() {
-            cols = parseInt(document.getElementById('resolutionSelect').value);
-            document.getElementById('resolutionDisplay').innerText = `GRID: ${cols} cols`;
+
+            cols =
+                parseInt(
+                    document.getElementById('resolutionSelect').value
+                );
+
+            document.getElementById('resolutionDisplay').innerText =
+                `GRID: ${cols} cols`;
+
         }
+
 
         async function toggleCamera() {
-            if (!streaming) {
-                try {
-                    let stream = null;
-                    document.getElementById('statusText').innerText = 'STATUS: REQUESTING_PERMISSION...';
-                    
-                    try {
-                        stream = await navigator.mediaDevices.getUserMedia({ 
-                            video: { width: { ideal: 640 }, height: { ideal: 480 } }, 
-                            audio: false 
-                        });
-                    } catch (err1) {
-                        console.warn("Ideal constraints failed, attempting fallback to basic video stream...", err1);
-                        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                    }
 
-                    video.srcObject = stream;
-                    
-                    await video.play().catch(async () => {
-                        await new RegExp('x').test(window.location.href);
-                        await video.play();
+            // If camera is already running
+            if (streaming) {
+
+                stopCamera();
+
+                return;
+
+            }
+
+
+            // Check browser support
+            if (
+                !navigator.mediaDevices ||
+                !navigator.mediaDevices.getUserMedia
+            ) {
+
+                document.getElementById('statusText').innerText =
+                    'STATUS: CAMERA_API_UNAVAILABLE';
+
+                alert(
+                    'Your browser does not support webcam access.'
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                document.getElementById('statusText').innerText =
+                    'STATUS: REQUESTING_PERMISSION...';
+
+
+                /*
+                    Request the camera.
+
+                    We intentionally use ONE request instead of
+                    immediately retrying with another getUserMedia call.
+                */
+
+                const stream =
+                    await navigator.mediaDevices.getUserMedia({
+
+                        video: true,
+
+                        audio: false
+
                     });
 
-                    streaming = true;
-                    streamPlaceholder.style.display = 'none';
-                    document.getElementById('camBtnText').innerText = 'Disconnect Camera';
-                    document.getElementById('statusText').innerText = 'STATUS: STREAM_ACTIVE [OK]';
-                    requestAnimationFrame(processFrame);
-                } catch (err) {
-                    console.error("Camera acquisition error:", err);
-                    document.getElementById('statusText').innerText = 'STATUS: PERMISSION_ERROR';
-                    alert('Could not initialize camera. Please check browser permissions or ensure no other application is locking the webcam.');
+
+                console.log('Camera stream acquired:', stream);
+
+
+                /*
+                    Attach the stream before trying to play it.
+                */
+
+                video.srcObject = stream;
+
+
+                /*
+                    Wait until the browser knows the camera's
+                    actual video dimensions.
+                */
+
+                await new Promise((resolve, reject) => {
+
+                    if (video.readyState >= 1) {
+
+                        resolve();
+
+                        return;
+
+                    }
+
+
+                    video.onloadedmetadata = () => {
+
+                        resolve();
+
+                    };
+
+
+                    video.onerror = () => {
+
+                        reject(
+                            new Error('Video metadata failed to load')
+                        );
+
+                    };
+
+                });
+
+
+                /*
+                    Now start playback.
+                */
+
+                await video.play();
+
+
+                /*
+                    Camera is officially working.
+                */
+
+                streaming = true;
+
+                streamPlaceholder.style.display = 'none';
+
+                document.getElementById('camBtnText').innerText =
+                    'Disconnect Camera';
+
+                document.getElementById('statusText').innerText =
+                    'STATUS: STREAM_ACTIVE [OK]';
+
+
+                frameCount = 0;
+
+                lastTime = performance.now();
+
+
+                requestAnimationFrame(processFrame);
+
+
+            } catch (err) {
+
+                console.error(
+                    'Camera acquisition error:',
+                    err
+                );
+
+
+                /*
+                    If something failed after we got a stream,
+                    make sure the camera gets properly released.
+                */
+
+                if (video.srcObject) {
+
+                    video.srcObject
+                        .getTracks()
+                        .forEach(track => track.stop());
+
+                    video.srcObject = null;
+
                 }
-            } else {
-                stopCamera();
+
+
+                streaming = false;
+
+
+                let message =
+                    'Could not initialize camera.';
+
+
+                /*
+                    Handle specific browser errors.
+                */
+
+                if (err.name === 'NotAllowedError') {
+
+                    message =
+                        'Camera permission was denied. Please allow camera access in your browser.';
+
+                    document.getElementById('statusText').innerText =
+                        'STATUS: PERMISSION_DENIED';
+
+
+                } else if (err.name === 'NotFoundError') {
+
+                    message =
+                        'No camera was found on this device.';
+
+                    document.getElementById('statusText').innerText =
+                        'STATUS: NO_CAMERA_FOUND';
+
+
+                } else if (err.name === 'NotReadableError') {
+
+                    message =
+                        'The camera is already being used by another application.';
+
+                    document.getElementById('statusText').innerText =
+                        'STATUS: CAMERA_IN_USE';
+
+
+                } else if (err.name === 'OverconstrainedError') {
+
+                    message =
+                        'The camera does not support the requested settings.';
+
+                    document.getElementById('statusText').innerText =
+                        'STATUS: CAMERA_SETTINGS_ERROR';
+
+
+                } else if (err.name === 'SecurityError') {
+
+                    message =
+                        'Camera access was blocked for security reasons. Make sure the site is using HTTPS or localhost.';
+
+                    document.getElementById('statusText').innerText =
+                        'STATUS: SECURITY_ERROR';
+
+
+                } else {
+
+                    document.getElementById('statusText').innerText =
+                        'STATUS: CAMERA_ERROR';
+
+                }
+
+
+                alert(message);
+
             }
+
         }
+
 
         function stopCamera() {
+
+            /*
+                Stop every camera track.
+            */
+
             if (video.srcObject) {
-                let tracks = video.srcObject.getTracks();
-                tracks.forEach(track => track.stop());
+
+                const tracks =
+                    video.srcObject.getTracks();
+
+                tracks.forEach(track => {
+
+                    track.stop();
+
+                });
+
                 video.srcObject = null;
+
             }
-            cancelAnimationFrame(animationFrameId);
+
+
+            /*
+                Stop ASCII rendering.
+            */
+
+            if (animationFrameId !== null) {
+
+                cancelAnimationFrame(animationFrameId);
+
+                animationFrameId = null;
+
+            }
+
+
             streaming = false;
+
+
+            /*
+                Reset video element.
+            */
+
+            video.pause();
+
+            video.removeAttribute('src');
+
+
+            /*
+                Reset interface.
+            */
+
             streamPlaceholder.style.display = 'flex';
+
             asciiContainer.innerText = '';
-            document.getElementById('camBtnText').innerText = 'Initialize Camera';
-            document.getElementById('statusText').innerText = 'STATUS: WAITING_FOR_INPUT';
+
+            document.getElementById('camBtnText').innerText =
+                'Initialize Camera';
+
+            document.getElementById('statusText').innerText =
+                'STATUS: WAITING_FOR_INPUT';
+
+            document.getElementById('fpsCounter').innerText =
+                'FPS: 0';
+
         }
 
-        function processFrame() {
-            if (!streaming) return;
 
-            const now = performance.now();
-            frameCount++;
-            if (now - lastTime >= 1000) {
-                document.getElementById('fpsCounter').innerText = `FPS: ${Math.round((frameCount * 1000) / (now - lastTime))}`;
-                frameCount = 0;
-                lastTime = now;
+        function processFrame() {
+
+            if (!streaming) {
+                return;
             }
 
-            const videoWidth = video.videoWidth || 640;
-            const videoHeight = video.videoHeight || 480;
-            const aspectRatio = videoHeight / videoWidth;
-            const rows = Math.round(cols * aspectRatio * 0.55);
+
+            /*
+                FPS counter
+            */
+
+            const now = performance.now();
+
+            frameCount++;
+
+
+            if (now - lastTime >= 1000) {
+
+                const fps =
+                    Math.round(
+                        (frameCount * 1000) /
+                        (now - lastTime)
+                    );
+
+
+                document.getElementById('fpsCounter').innerText =
+                    `FPS: ${fps}`;
+
+
+                frameCount = 0;
+
+                lastTime = now;
+
+            }
+
+
+            /*
+                Make sure the video actually has dimensions.
+            */
+
+            if (
+                video.videoWidth === 0 ||
+                video.videoHeight === 0
+            ) {
+
+                animationFrameId =
+                    requestAnimationFrame(processFrame);
+
+                return;
+
+            }
+
+
+            const videoWidth =
+                video.videoWidth;
+
+            const videoHeight =
+                video.videoHeight;
+
+
+            const aspectRatio =
+                videoHeight / videoWidth;
+
+
+            const rows =
+                Math.max(
+                    1,
+                    Math.round(
+                        cols *
+                        aspectRatio *
+                        0.55
+                    )
+                );
+
+
+            /*
+                Resize processing canvas.
+            */
 
             canvas.width = cols;
+
             canvas.height = rows;
 
-            ctx.drawImage(video, 0, 0, cols, rows);
-            const imgData = ctx.getImageData(0, 0, cols, rows).data;
+
+            /*
+                Draw camera frame.
+            */
+
+            ctx.drawImage(
+                video,
+                0,
+                0,
+                cols,
+                rows
+            );
+
+
+            /*
+                Get pixel data.
+            */
+
+            const imgData =
+                ctx.getImageData(
+                    0,
+                    0,
+                    cols,
+                    rows
+                ).data;
+
 
             let asciiString = "";
 
-            for (let y = 0; y < rows; y++) {
-                for (let x = 0; x < cols; x++) {
-                    const offset = (y * cols + x) * 4;
-                    const r = imgData[offset];
-                    const g = imgData[offset + 1];
-                    const b = imgData[offset + 2];
 
-                    const avg = (0.299 * r + 0.587 * g + 0.114 * b);
-                    const charIndex = Math.floor((avg / 255) * (charRamp.length - 1));
-                    asciiString += charRamp[charIndex];
+            /*
+                Convert pixels to ASCII.
+            */
+
+            for (let y = 0; y < rows; y++) {
+
+                for (let x = 0; x < cols; x++) {
+
+                    const offset =
+                        (y * cols + x) * 4;
+
+
+                    const r =
+                        imgData[offset];
+
+                    const g =
+                        imgData[offset + 1];
+
+                    const b =
+                        imgData[offset + 2];
+
+
+                    /*
+                        Convert RGB to brightness.
+                    */
+
+                    const avg =
+                        0.299 * r +
+                        0.587 * g +
+                        0.114 * b;
+
+
+                    const charIndex =
+                        Math.floor(
+                            (avg / 255) *
+                            (charRamp.length - 1)
+                        );
+
+
+                    asciiString +=
+                        charRamp[charIndex];
+
                 }
+
+
                 asciiString += "\n";
+
             }
 
-            currentSnapshotText = asciiString;
-            asciiContainer.innerText = asciiString;
 
-            animationFrameId = requestAnimationFrame(processFrame);
+            /*
+                Save latest frame for snapshot.
+            */
+
+            currentSnapshotText =
+                asciiString;
+
+
+            asciiContainer.innerText =
+                asciiString;
+
+
+            /*
+                Continue rendering.
+            */
+
+            animationFrameId =
+                requestAnimationFrame(processFrame);
+
         }
+
 
         function takeSnapshot() {
+
             if (!streaming) {
-                alert('Please initialize camera first before capturing frames.');
+
+                alert(
+                    'Please initialize camera first before capturing frames.'
+                );
+
                 return;
+
             }
-            snapshotPreview.innerText = currentSnapshotText;
-            snapshotModal.classList.remove('hidden');
+
+
+            snapshotPreview.innerText =
+                currentSnapshotText;
+
+
+            snapshotModal.classList.remove(
+                'hidden'
+            );
+
         }
+
 
         function closeSnapshotModal() {
-            snapshotModal.classList.add('hidden');
+
+            snapshotModal.classList.add(
+                'hidden'
+            );
+
         }
+
 
         function downloadSnapshot() {
-            const blob = new Blob([currentSnapshotText], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+
+            const blob =
+                new Blob(
+                    [currentSnapshotText],
+                    {
+                        type: 'text/plain'
+                    }
+                );
+
+
+            const url =
+                URL.createObjectURL(blob);
+
+
+            const a =
+                document.createElement('a');
+
+
             a.href = url;
-            a.download = `ascii-snapshot-${Date.now()}.txt`;
+
+
+            a.download =
+                `ascii-snapshot-${Date.now()}.txt`;
+
+
             document.body.appendChild(a);
+
+
             a.click();
+
+
             document.body.removeChild(a);
+
+
             URL.revokeObjectURL(url);
+
         }
 
+
         function toggleFullscreen() {
+
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
+
+                document.documentElement
+                    .requestFullscreen()
+                    .catch(err => {
+
+                        console.error(
+                            'Fullscreen error:',
+                            err
+                        );
+
+                    });
+
             } else {
+
                 if (document.exitFullscreen) {
+
                     document.exitFullscreen();
+
                 }
+
             }
+
         }
+
+
+        /*
+            Set initial palette.
+        */
+
+        changePalette();
+
+
+        /*
+            Clean up camera if the user leaves the page.
+        */
+
+        window.addEventListener(
+            'beforeunload',
+            () => {
+
+                if (video.srcObject) {
+
+                    video.srcObject
+                        .getTracks()
+                        .forEach(track => track.stop());
+
+                }
+
+            }
+        );
+
     </script>
+
 </body>
 </html>
