@@ -327,13 +327,15 @@ Download ASCII Text
         const snapshotPreview = document.getElementById('snapshotPreview');
 
         let streaming = false;
-        let animationFrameId;
+        let animationFrameId = null;
         let cols = 120;
         let charRamp = "Ñ@#W$9876543210?!abc;:+=-,._ ";
         let lastTime = performance.now();
         let frameCount = 0;
         let currentSnapshotText = "";
-        let frozenSnapshotText = ""; // Zamrznuti kadar u trenutku hvatanja
+        let frozenSnapshotText = "";
+        let currentStream = null;
+        let cameraSession = 0;
 
         const palettes = {
             matrix: { text: '#00ff66', bg: '#050505' },
@@ -356,20 +358,19 @@ Download ASCII Text
         async function toggleCamera() {
             if (!streaming) {
                 try {
-                    let stream = null;
                     document.getElementById('statusText').innerText = 'STATUS: REQUESTING_PERMISSION...';
                     
                     try {
-                        stream = await navigator.mediaDevices.getUserMedia({ 
+                        currentStream = await navigator.mediaDevices.getUserMedia({ 
                             video: { width: { ideal: 640 }, height: { ideal: 480 } }, 
                             audio: false 
                         });
                     } catch (err1) {
                         console.warn("Ideal constraints failed, attempting fallback to basic video stream...", err1);
-                        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                        currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                     }
 
-                    video.srcObject = stream;
+                    video.srcObject = currentStream;
                     
                     await video.play().catch(async () => {
                         await new RegExp('x').test(window.location.href);
@@ -392,12 +393,18 @@ Download ASCII Text
         }
 
         function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
             if (video.srcObject) {
-                let tracks = video.srcObject.getTracks();
-                tracks.forEach(track => track.stop());
+                video.srcObject.getTracks().forEach(track => track.stop());
                 video.srcObject = null;
             }
-            cancelAnimationFrame(animationFrameId);
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
             streaming = false;
             streamPlaceholder.style.display = 'flex';
             asciiContainer.innerText = '';
@@ -454,7 +461,6 @@ Download ASCII Text
                 alert('Please initialize camera first before capturing frames.');
                 return;
             }
-            // Zamrzavanje trenutnog stanja teksta
             frozenSnapshotText = currentSnapshotText;
             snapshotPreview.innerText = frozenSnapshotText;
             snapshotModal.classList.remove('hidden');
@@ -465,7 +471,6 @@ Download ASCII Text
         }
 
         function downloadSnapshot() {
-            // Preuzima se zamrznuti kadar umjesto živog s kamere
             const blob = new Blob([frozenSnapshotText], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -487,72 +492,14 @@ Download ASCII Text
             }
         }
 
-if (
-    navigator.mediaDevices &&
-    navigator.mediaDevices.addEventListener
-) {
+        // Gašenje kamere pri zatvaranju ili osvježavanju kartice
+        window.addEventListener("pagehide", () => {
+            cameraSession++;
+            stopCamera();
+        });
 
-    navigator.mediaDevices.addEventListener(
-        "devicechange",
-        async () => {
-
-            try {
-
-                const cameras =
-                    await getCameras();
-
-                console.log(
-                    "Camera devices changed:",
-                    cameras.length
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Device detection error:",
-                    error
-                );
-            }
-        }
-    );
-}
-
-window.addEventListener(
-    "pagehide",
-    () => {
-
-        cameraSession++;
-        streaming = false;
-
-        if (animationFrameId !== null) {
-
-            cancelAnimationFrame(
-                animationFrameId
-            );
-        }
-
-        if (currentStream) {
-
-            currentStream
-                .getTracks()
-                .forEach(
-                    track => track.stop()
-                );
-        }
-
-        if (video.srcObject) {
-
-            video.srcObject
-                .getTracks()
-                .forEach(
-                    track => track.stop()
-                );
-        }
-    }
-);
-
-changePalette();
-changeResolution();
+        changePalette();
+        changeResolution();
 </script>
 
 </body>
