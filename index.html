@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Cam2Text - Turn Webcam into ASCII Art</title>
     <link rel="icon" type="image/png" href="logoa.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,15 +27,9 @@
         }
     </script>
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         body {
@@ -55,7 +48,6 @@
                     rgba(0, 255, 0, 0.02),
                     rgba(0, 0, 255, 0.06)
                 );
-
             background-size: 100% 4px, 6px 100%;
             pointer-events: none;
         }
@@ -85,19 +77,14 @@
     <div class="fixed inset-0 crt-scanline z-45 pointer-events-none"></div>
 
     <header class="relative z-50 border-b border-terminal-green/20 bg-terminal-card/80 backdrop-blur-md">
-
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
             <div class="flex items-center space-x-3">
-
                 <div class="w-8 h-8 rounded border border-terminal-green/50 flex items-center justify-center bg-terminal-green/10 text-terminal-green animate-pulse">
-
                     <i class="fa-solid fa-terminal text-xs"></i>
-
                 </div>
 
                 <div>
-
                     <span class="font-bold tracking-wider text-sm sm:text-base">
                         Cam2Text
                     </span>
@@ -105,36 +92,28 @@
                     <span class="block text-[9px] text-terminal-green/60 tracking-widest uppercase">
                         Turn Webcam into ASCII Art
                     </span>
-
                 </div>
-
             </div>
 
             <div class="flex items-center space-x-3 text-xs">
 
                 <div class="hidden sm:flex items-center space-x-2 bg-terminal-green/10 border border-terminal-green/30 px-3 py-1 rounded">
-
                     <span class="w-2 h-2 rounded-full bg-terminal-green animate-ping"></span>
 
                     <span id="fpsCounter" class="font-bold">
                         FPS: 0
                     </span>
-
                 </div>
 
                 <button
                     onclick="toggleFullscreen()"
                     class="p-2 border border-terminal-green/30 hover:bg-terminal-green/20 rounded transition-colors"
                 >
-
                     <i class="fa-solid fa-expand"></i>
-
                 </button>
 
             </div>
-
         </div>
-
     </header>
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col justify-center items-center relative z-10">
@@ -150,13 +129,11 @@
                         onclick="toggleCamera()"
                         class="px-4 py-2 bg-terminal-green text-black font-bold rounded hover:bg-terminal-green/80 transition-all flex items-center space-x-2"
                     >
-
                         <i class="fa-solid fa-power-off"></i>
 
                         <span id="camBtnText">
                             Initialize Camera
                         </span>
-
                     </button>
 
                 </div>
@@ -174,7 +151,6 @@
                             onchange="changePalette()"
                             class="bg-black border border-terminal-green/40 text-terminal-green rounded px-2 py-1 focus:outline-none"
                         >
-
                             <option value="matrix">
                                 Matrix Green
                             </option>
@@ -186,7 +162,6 @@
                             <option value="cyan">
                                 Neon Cyan
                             </option>
-
                         </select>
 
                     </div>
@@ -202,7 +177,6 @@
                             onchange="changeResolution()"
                             class="bg-black border border-terminal-green/40 text-terminal-green rounded px-2 py-1 focus:outline-none"
                         >
-
                             <option value="80">
                                 Standard (80 cols)
                             </option>
@@ -214,13 +188,11 @@
                             <option value="160">
                                 Ultra (160 cols)
                             </option>
-
                         </select>
 
                     </div>
 
                 </div>
-
             </div>
 
             <div class="relative bg-black border-2 border-terminal-green/50 rounded-xl overflow-hidden shadow-2xl shadow-terminal-green/10 p-4 flex items-center justify-center min-h-[420px]">
@@ -244,9 +216,7 @@
                 >
 
                     <div class="w-16 h-16 rounded-full border border-terminal-green/40 flex items-center justify-center mb-4 text-terminal-green/60 animate-bounce">
-
                         <i class="fa-solid fa-video text-2xl"></i>
-
                     </div>
 
                     <h2 class="text-lg font-bold tracking-wider mb-2">
@@ -287,144 +257,84 @@
     </main>
 
     <footer class="relative z-50 border-t border-terminal-green/20 bg-terminal-card/80 py-4 text-center text-[10px] text-terminal-green/50 tracking-wider">
-
         <p>
             &copy; 2026 Cam2Text. All rights reserved.
         </p>
-
     </footer>
 
 <script>
 
-const video =
-    document.getElementById("webcamVideo");
-
-const canvas =
-    document.getElementById("processingCanvas");
-
-const ctx =
-    canvas.getContext("2d", {
-        willReadFrequently: true
-    });
-
-const asciiContainer =
-    document.getElementById("asciiContainer");
-
-const streamPlaceholder =
-    document.getElementById("streamPlaceholder");
-
-const toggleCamBtn =
-    document.getElementById("toggleCamBtn");
-
-const camBtnText =
-    document.getElementById("camBtnText");
-
-const statusText =
-    document.getElementById("statusText");
-
-const fpsCounter =
-    document.getElementById("fpsCounter");
+const video = document.getElementById("webcamVideo");
+const canvas = document.getElementById("processingCanvas");
+const ctx = canvas.getContext("2d", {
+    willReadFrequently: true
+});
+const asciiContainer = document.getElementById("asciiContainer");
+const streamPlaceholder = document.getElementById("streamPlaceholder");
+const toggleCamBtn = document.getElementById("toggleCamBtn");
+const camBtnText = document.getElementById("camBtnText");
+const statusText = document.getElementById("statusText");
+const fpsCounter = document.getElementById("fpsCounter");
 
 let currentStream = null;
-
 let streaming = false;
-
 let cameraBusy = false;
-
 let animationFrameId = null;
-
 let cameraSession = 0;
-
 let cols = 120;
-
 let frameCount = 0;
-
 let lastTime = performance.now();
 
-const charRamp =
-    "Ñ@#W$9876543210?!abc;:+=-,._ ";
+const charRamp = "Ñ@#W$9876543210?!abc;:+=-,._ ";
 
 const palettes = {
-
     matrix: {
         text: "#00ff66",
         bg: "#050505"
     },
-
     amber: {
         text: "#ffb000",
         bg: "#050300"
     },
-
     cyan: {
         text: "#00f0ff",
         bg: "#000305"
     }
-
 };
 
 function sleep(ms) {
-
     return new Promise(resolve => {
-
         setTimeout(resolve, ms);
-
     });
-
 }
 
 function setStatus(text) {
-
-    statusText.innerText =
-        "STATUS: " + text;
-
+    statusText.innerText = "STATUS: " + text;
 }
 
 function changePalette() {
+    const value = document.getElementById("paletteSelect").value;
+    const palette = palettes[value];
 
-    const value =
-        document.getElementById(
-            "paletteSelect"
-        ).value;
-
-    const palette =
-        palettes[value];
-
-    asciiContainer.style.color =
-        palette.text;
-
-    document.body.style.backgroundColor =
-        palette.bg;
-
+    asciiContainer.style.color = palette.text;
+    document.body.style.backgroundColor = palette.bg;
 }
 
 function changeResolution() {
+    cols = parseInt(
+        document.getElementById("resolutionSelect").value
+    );
 
-    cols =
-        parseInt(
-            document.getElementById(
-                "resolutionSelect"
-            ).value
-        );
-
-    document.getElementById(
-        "resolutionDisplay"
-    ).innerText =
+    document.getElementById("resolutionDisplay").innerText =
         `GRID: ${cols} cols`;
-
 }
 
 async function getCameras() {
-
     if (
         !navigator.mediaDevices ||
         !navigator.mediaDevices.enumerateDevices
     ) {
-
-        throw new Error(
-            "Camera API is unavailable"
-        );
-
+        throw new Error("Camera API is unavailable");
     }
 
     const devices =
@@ -432,205 +342,133 @@ async function getCameras() {
 
     const cameras =
         devices.filter(
-            device =>
-                device.kind === "videoinput"
+            device => device.kind === "videoinput"
         );
 
-    console.log(
-        "Detected cameras:",
-        cameras
-    );
+    console.log("Detected cameras:", cameras);
 
     return cameras;
-
 }
 
 async function stopCamera() {
-
     cameraSession++;
-
     streaming = false;
 
-    if (
-        animationFrameId !== null
-    ) {
-
-        cancelAnimationFrame(
-            animationFrameId
-        );
-
+    if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
-
     }
 
-    const oldStream =
-        currentStream;
-
-    currentStream =
-        null;
+    const oldStream = currentStream;
+    currentStream = null;
 
     if (oldStream) {
-
-        const tracks =
-            oldStream.getTracks();
+        const tracks = oldStream.getTracks();
 
         tracks.forEach(track => {
-
             track.onended = null;
-
             track.onmute = null;
-
             track.stop();
-
         });
-
     }
 
-    if (
-        video.srcObject
-    ) {
-
-        video.srcObject =
-            null;
-
+    if (video.srcObject) {
+        video.srcObject = null;
     }
 
     try {
-
         video.pause();
-
     } catch (error) {
-
-        console.warn(
-            "Video pause error:",
-            error
-        );
-
+        console.warn("Video pause error:", error);
     }
 
-    asciiContainer.innerText =
-        "";
+    asciiContainer.innerText = "";
+    fpsCounter.innerText = "FPS: 0";
+    camBtnText.innerText = "Initialize Camera";
+    streamPlaceholder.style.display = "flex";
 
-    fpsCounter.innerText =
-        "FPS: 0";
-
-    camBtnText.innerText =
-        "Initialize Camera";
-
-    streamPlaceholder.style.display =
-        "flex";
-
-    setStatus(
-        "WAITING_FOR_INPUT"
-    );
+    setStatus("WAITING_FOR_INPUT");
 
     await sleep(800);
-
 }
 
 function waitForVideo() {
+    return new Promise((resolve, reject) => {
 
-    return new Promise(
-        (resolve, reject) => {
+        if (
+            video.readyState >= 1 &&
+            video.videoWidth > 0
+        ) {
+            resolve();
+            return;
+        }
 
-            if (
-                video.readyState >= 1 &&
-                video.videoWidth > 0
-            ) {
+        let timeout;
 
-                resolve();
-
-                return;
-
-            }
-
-            let timeout;
-
-            function cleanup() {
-
-                video.removeEventListener(
-                    "loadedmetadata",
-                    success
-                );
-
-                video.removeEventListener(
-                    "error",
-                    failure
-                );
-
-                clearTimeout(timeout);
-
-            }
-
-            function success() {
-
-                cleanup();
-
-                resolve();
-
-            }
-
-            function failure() {
-
-                cleanup();
-
-                reject(
-                    new Error(
-                        "Video failed to initialize"
-                    )
-                );
-
-            }
-
-            video.addEventListener(
+        function cleanup() {
+            video.removeEventListener(
                 "loadedmetadata",
                 success
             );
 
-            video.addEventListener(
+            video.removeEventListener(
                 "error",
                 failure
             );
 
-            timeout =
-                setTimeout(() => {
-
-                    cleanup();
-
-                    reject(
-                        new Error(
-                            "Camera startup timed out"
-                        )
-                    );
-
-                }, 8000);
-
+            clearTimeout(timeout);
         }
-    );
 
+        function success() {
+            cleanup();
+            resolve();
+        }
+
+        function failure() {
+            cleanup();
+
+            reject(
+                new Error(
+                    "Video failed to initialize"
+                )
+            );
+        }
+
+        video.addEventListener(
+            "loadedmetadata",
+            success
+        );
+
+        video.addEventListener(
+            "error",
+            failure
+        );
+
+        timeout = setTimeout(() => {
+            cleanup();
+
+            reject(
+                new Error(
+                    "Camera startup timed out"
+                )
+            );
+        }, 8000);
+    });
 }
 
 async function startCamera() {
 
-    const session =
-        ++cameraSession;
+    const session = ++cameraSession;
 
-    setStatus(
-        "CHECKING_CAMERA..."
-    );
+    setStatus("CHECKING_CAMERA...");
 
-    const cameras =
-        await getCameras();
+    const cameras = await getCameras();
 
-    if (
-        cameras.length === 0
-    ) {
-
+    if (cameras.length === 0) {
         throw new DOMException(
             "No camera detected",
             "NotFoundError"
         );
-
     }
 
     console.log(
@@ -638,9 +476,7 @@ async function startCamera() {
     );
 
     if (currentStream) {
-
         await stopCamera();
-
     }
 
     await sleep(500);
@@ -653,16 +489,11 @@ async function startCamera() {
         attempt++
     ) {
 
-        if (
-            session !== cameraSession
-        ) {
-
+        if (session !== cameraSession) {
             console.log(
                 "Camera request cancelled"
             );
-
             return;
-
         }
 
         try {
@@ -673,55 +504,43 @@ async function startCamera() {
 
             const stream =
                 await navigator.mediaDevices.getUserMedia({
-
                     video: {
                         width: {
                             ideal: 640
                         },
-
                         height: {
                             ideal: 480
                         }
                     },
-
                     audio: false
-
                 });
 
-            if (
-                session !== cameraSession
-            ) {
+            if (session !== cameraSession) {
 
                 stream
                     .getTracks()
                     .forEach(
-                        track =>
-                            track.stop()
+                        track => track.stop()
                     );
 
                 return;
-
             }
 
             const tracks =
                 stream.getVideoTracks();
 
-            if (
-                tracks.length === 0
-            ) {
+            if (tracks.length === 0) {
 
                 stream
                     .getTracks()
                     .forEach(
-                        track =>
-                            track.stop()
+                        track => track.stop()
                     );
 
                 throw new DOMException(
                     "No video track",
                     "NotFoundError"
                 );
-
             }
 
             console.log(
@@ -729,8 +548,7 @@ async function startCamera() {
                 tracks[0].label
             );
 
-            currentStream =
-                stream;
+            currentStream = stream;
 
             tracks[0].onended = () => {
 
@@ -748,29 +566,22 @@ async function startCamera() {
                     setStatus(
                         "CAMERA_DISCONNECTED"
                     );
-
                 }
-
             };
 
-            video.srcObject =
-                stream;
+            video.srcObject = stream;
 
             await waitForVideo();
 
-            if (
-                session !== cameraSession
-            ) {
+            if (session !== cameraSession) {
 
                 stream
                     .getTracks()
                     .forEach(
-                        track =>
-                            track.stop()
+                        track => track.stop()
                     );
 
                 return;
-
             }
 
             await video.play();
@@ -781,15 +592,12 @@ async function startCamera() {
                 video.videoWidth === 0 ||
                 video.videoHeight === 0
             ) {
-
                 throw new Error(
                     "Camera returned no video dimensions"
                 );
-
             }
 
-            streaming =
-                true;
+            streaming = true;
 
             streamPlaceholder.style.display =
                 "none";
@@ -802,9 +610,7 @@ async function startCamera() {
             );
 
             frameCount = 0;
-
-            lastTime =
-                performance.now();
+            lastTime = performance.now();
 
             animationFrameId =
                 requestAnimationFrame(
@@ -815,90 +621,65 @@ async function startCamera() {
 
         } catch (error) {
 
-            lastError =
-                error;
+            lastError = error;
 
             console.warn(
                 `Camera attempt ${attempt} failed:`,
                 error
             );
 
-            if (
-                currentStream
-            ) {
+            if (currentStream) {
 
                 currentStream
                     .getTracks()
                     .forEach(
-                        track =>
-                            track.stop()
+                        track => track.stop()
                     );
 
-                currentStream =
-                    null;
-
+                currentStream = null;
             }
 
-            video.srcObject =
-                null;
+            video.srcObject = null;
 
             if (
                 error.name ===
                 "NotAllowedError"
             ) {
-
                 throw error;
-
             }
 
             if (
                 error.name ===
                 "NotFoundError"
             ) {
-
                 throw error;
-
             }
 
-            if (
-                attempt < 3
-            ) {
+            if (attempt < 3) {
 
                 setStatus(
                     `CAMERA_BUSY_RETRYING... [${attempt}/3]`
                 );
 
                 await sleep(1500);
-
             }
-
         }
-
     }
 
     throw lastError;
-
 }
 
 async function toggleCamera() {
 
-    if (
-        cameraBusy
-    ) {
-
+    if (cameraBusy) {
         console.log(
             "Camera operation already running"
         );
-
         return;
-
     }
 
-    cameraBusy =
-        true;
-
-    toggleCamBtn.disabled =
-        true;
+    cameraBusy = true;
+    toggleCamBtn.disabled = true;
 
     try {
 
@@ -916,7 +697,6 @@ async function toggleCamera() {
             await sleep(700);
 
             return;
-
         }
 
         await startCamera();
@@ -943,9 +723,7 @@ async function toggleCamera() {
                 "Camera permission was denied. Allow camera access and try again."
             );
 
-        }
-
-        else if (
+        } else if (
             error.name ===
             "NotFoundError"
         ) {
@@ -958,9 +736,7 @@ async function toggleCamera() {
                 "No webcam was detected."
             );
 
-        }
-
-        else if (
+        } else if (
             error.name ===
             "NotReadableError"
         ) {
@@ -973,9 +749,7 @@ async function toggleCamera() {
                 "The webcam could not be started. Another application may be using it. Close Discord, OBS, Zoom, Teams, Camera, etc and try again."
             );
 
-        }
-
-        else if (
+        } else if (
             error.name ===
             "SecurityError"
         ) {
@@ -988,9 +762,7 @@ async function toggleCamera() {
                 "The browser blocked camera access. Make sure the website is using HTTPS."
             );
 
-        }
-
-        else {
+        } else {
 
             setStatus(
                 "CAMERA_ERROR"
@@ -1000,21 +772,15 @@ async function toggleCamera() {
                 "Camera error: " +
                 (error.message || error)
             );
-
         }
 
     } finally {
 
         await sleep(500);
 
-        cameraBusy =
-            false;
-
-        toggleCamBtn.disabled =
-            false;
-
+        cameraBusy = false;
+        toggleCamBtn.disabled = false;
     }
-
 }
 
 function processFrame() {
@@ -1023,9 +789,7 @@ function processFrame() {
         !streaming ||
         !currentStream
     ) {
-
         return;
-
     }
 
     if (
@@ -1039,11 +803,9 @@ function processFrame() {
             );
 
         return;
-
     }
 
-    const now =
-        performance.now();
+    const now = performance.now();
 
     frameCount++;
 
@@ -1060,12 +822,8 @@ function processFrame() {
         fpsCounter.innerText =
             `FPS: ${fps}`;
 
-        frameCount =
-            0;
-
-        lastTime =
-            now;
-
+        frameCount = 0;
+        lastTime = now;
     }
 
     const width =
@@ -1087,11 +845,8 @@ function processFrame() {
             )
         );
 
-    canvas.width =
-        cols;
-
-    canvas.height =
-        rows;
+    canvas.width = cols;
+    canvas.height = rows;
 
     ctx.drawImage(
         video,
@@ -1109,8 +864,7 @@ function processFrame() {
             rows
         ).data;
 
-    let ascii =
-        "";
+    let ascii = "";
 
     for (
         let y = 0;
@@ -1149,12 +903,9 @@ function processFrame() {
 
             ascii +=
                 charRamp[charIndex];
-
         }
 
-        ascii +=
-            "\n";
-
+        ascii += "\n";
     }
 
     asciiContainer.innerText =
@@ -1164,14 +915,11 @@ function processFrame() {
         requestAnimationFrame(
             processFrame
         );
-
 }
 
 function toggleFullscreen() {
 
-    if (
-        !document.fullscreenElement
-    ) {
+    if (!document.fullscreenElement) {
 
         document.documentElement
             .requestFullscreen()
@@ -1186,9 +934,7 @@ function toggleFullscreen() {
     } else {
 
         document.exitFullscreen();
-
     }
-
 }
 
 if (
@@ -1216,12 +962,9 @@ if (
                     "Device detection error:",
                     error
                 );
-
             }
-
         }
     );
-
 }
 
 window.addEventListener(
@@ -1229,9 +972,7 @@ window.addEventListener(
     () => {
 
         cameraSession++;
-
-        streaming =
-            false;
+        streaming = false;
 
         if (
             animationFrameId !== null
@@ -1240,12 +981,9 @@ window.addEventListener(
             cancelAnimationFrame(
                 animationFrameId
             );
-
         }
 
-        if (
-            currentStream
-        ) {
+        if (currentStream) {
 
             currentStream
                 .getTracks()
@@ -1253,12 +991,9 @@ window.addEventListener(
                     track =>
                         track.stop()
                 );
-
         }
 
-        if (
-            video.srcObject
-        ) {
+        if (video.srcObject) {
 
             video.srcObject
                 .getTracks()
@@ -1266,14 +1001,11 @@ window.addEventListener(
                     track =>
                         track.stop()
                 );
-
         }
-
     }
 );
 
 changePalette();
-
 changeResolution();
 
 </script>
