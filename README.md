@@ -28,6 +28,6 @@ Sometimes, even after you grant camera permissions, browsers or underlying drive
 
 ## Credits and License
 
-* Built with Tailwind CSS and Font Awesome.
-* Inspired by classic terminal aesthetics and retro computing.
-* Open-source and available under the MIT License.
+* Built with Tailwind CSS and Font Awesome
+* Inspired by classic terminal aesthetics and retro computing
+* Open-source and available under the MIT License
