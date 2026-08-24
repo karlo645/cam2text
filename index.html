@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Cam2Text - Turn Webcam into ASCII Art</title>
-
+    <link rel="icon" type="image/png" href="logoa.png">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -80,14 +80,9 @@
     </style>
 </head>
 
-
 <body class="bg-terminal-bg text-terminal-green min-h-screen flex flex-col justify-between selection:bg-terminal-green selection:text-black overflow-x-hidden">
 
-
     <div class="fixed inset-0 crt-scanline z-45 pointer-events-none"></div>
-
-
-    <!-- HEADER -->
 
     <header class="relative z-50 border-b border-terminal-green/20 bg-terminal-card/80 backdrop-blur-md">
 
@@ -115,7 +110,6 @@
 
             </div>
 
-
             <div class="flex items-center space-x-3 text-xs">
 
                 <div class="hidden sm:flex items-center space-x-2 bg-terminal-green/10 border border-terminal-green/30 px-3 py-1 rounded">
@@ -127,7 +121,6 @@
                     </span>
 
                 </div>
-
 
                 <button
                     onclick="toggleFullscreen()"
@@ -144,15 +137,9 @@
 
     </header>
 
-
-    <!-- MAIN -->
-
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col justify-center items-center relative z-10">
 
         <div class="w-full max-w-5xl space-y-4">
-
-
-            <!-- CONTROLS -->
 
             <div class="flex flex-wrap items-center justify-between gap-3 bg-terminal-card border border-terminal-green/30 p-3 rounded-lg text-xs">
 
@@ -172,22 +159,7 @@
 
                     </button>
 
-
-                    <button
-                        onclick="takeSnapshot()"
-                        class="px-4 py-2 border border-terminal-green/40 hover:bg-terminal-green/20 rounded font-semibold transition-all flex items-center space-x-2"
-                    >
-
-                        <i class="fa-solid fa-camera"></i>
-
-                        <span>
-                            Capture Frame
-                        </span>
-
-                    </button>
-
                 </div>
-
 
                 <div class="flex flex-wrap items-center gap-3">
 
@@ -218,7 +190,6 @@
                         </select>
 
                     </div>
-
 
                     <div class="flex items-center space-x-2">
 
@@ -252,9 +223,6 @@
 
             </div>
 
-
-            <!-- CAMERA -->
-
             <div class="relative bg-black border-2 border-terminal-green/50 rounded-xl overflow-hidden shadow-2xl shadow-terminal-green/10 p-4 flex items-center justify-center min-h-[420px]">
 
                 <video
@@ -265,12 +233,10 @@
                     class="hidden"
                 ></video>
 
-
                 <canvas
                     id="processingCanvas"
                     class="hidden"
                 ></canvas>
-
 
                 <div
                     id="streamPlaceholder"
@@ -283,16 +249,13 @@
 
                     </div>
 
-
                     <h2 class="text-lg font-bold tracking-wider mb-2">
                         Webcam Feed Disconnected
                     </h2>
 
-
                     <p class="text-xs text-terminal-green/70 max-w-sm mb-4">
                         Click "Initialize Camera" above to stream your live video feed converted into real-time ASCII text matrices.
                     </p>
-
 
                     <span class="text-[10px] text-terminal-green/40 font-mono tracking-widest">
                         SECURE CLIENT-SIDE PROCESSING // NO DATA LEAVES BROWSER
@@ -300,16 +263,12 @@
 
                 </div>
 
-
                 <div
                     id="asciiContainer"
                     class="ascii-output font-mono text-center select-none overflow-hidden transition-colors duration-300"
                 ></div>
 
             </div>
-
-
-            <!-- STATUS -->
 
             <div class="flex justify-between items-center text-[10px] text-terminal-green/60 px-1 font-mono">
 
@@ -327,9 +286,6 @@
 
     </main>
 
-
-    <!-- FOOTER -->
-
     <footer class="relative z-50 border-t border-terminal-green/20 bg-terminal-card/80 py-4 text-center text-[10px] text-terminal-green/50 tracking-wider">
 
         <p>
@@ -338,68 +294,7 @@
 
     </footer>
 
-
-    <!-- SNAPSHOT -->
-
-    <div
-        id="snapshotModal"
-        class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4"
-    >
-
-        <div class="bg-terminal-card border border-terminal-green/50 p-6 rounded-xl max-w-2xl w-full space-y-4">
-
-            <div class="flex justify-between items-center border-b border-terminal-green/20 pb-3">
-
-                <h3 class="font-bold text-sm tracking-wide">
-                    Captured ASCII Frame
-                </h3>
-
-                <button
-                    onclick="closeSnapshotModal()"
-                    class="text-terminal-green/70 hover:text-terminal-green"
-                >
-
-                    <i class="fa-solid fa-xmark text-lg"></i>
-
-                </button>
-
-            </div>
-
-
-            <div class="bg-black p-3 rounded border border-terminal-green/30 overflow-x-auto max-h-72 flex justify-center">
-
-                <pre
-                    id="snapshotPreview"
-                    class="ascii-output"
-                ></pre>
-
-            </div>
-
-
-            <div class="flex justify-end space-x-3">
-
-                <button
-                    onclick="downloadSnapshot()"
-                    class="px-4 py-2 bg-terminal-green text-black font-bold rounded text-xs hover:bg-terminal-green/80 transition-all"
-                >
-
-                    Download ASCII Text
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
 <script>
-
-
-/* =========================================================
-   ELEMENTS
-========================================================= */
 
 const video =
     document.getElementById("webcamVideo");
@@ -418,12 +313,6 @@ const asciiContainer =
 const streamPlaceholder =
     document.getElementById("streamPlaceholder");
 
-const snapshotModal =
-    document.getElementById("snapshotModal");
-
-const snapshotPreview =
-    document.getElementById("snapshotPreview");
-
 const toggleCamBtn =
     document.getElementById("toggleCamBtn");
 
@@ -435,11 +324,6 @@ const statusText =
 
 const fpsCounter =
     document.getElementById("fpsCounter");
-
-
-/* =========================================================
-   STATE
-========================================================= */
 
 let currentStream = null;
 
@@ -457,16 +341,8 @@ let frameCount = 0;
 
 let lastTime = performance.now();
 
-let currentSnapshotText = "";
-
-
 const charRamp =
     "Ñ@#W$9876543210?!abc;:+=-,._ ";
-
-
-/* =========================================================
-   PALETTES
-========================================================= */
 
 const palettes = {
 
@@ -487,11 +363,6 @@ const palettes = {
 
 };
 
-
-/* =========================================================
-   UTILITY
-========================================================= */
-
 function sleep(ms) {
 
     return new Promise(resolve => {
@@ -502,18 +373,12 @@ function sleep(ms) {
 
 }
 
-
 function setStatus(text) {
 
     statusText.innerText =
         "STATUS: " + text;
 
 }
-
-
-/* =========================================================
-   PALETTE
-========================================================= */
 
 function changePalette() {
 
@@ -533,11 +398,6 @@ function changePalette() {
 
 }
 
-
-/* =========================================================
-   RESOLUTION
-========================================================= */
-
 function changeResolution() {
 
     cols =
@@ -554,11 +414,6 @@ function changeResolution() {
 
 }
 
-
-/* =========================================================
-   FIND CAMERAS
-========================================================= */
-
 async function getCameras() {
 
     if (
@@ -572,10 +427,8 @@ async function getCameras() {
 
     }
 
-
     const devices =
         await navigator.mediaDevices.enumerateDevices();
-
 
     const cameras =
         devices.filter(
@@ -583,36 +436,20 @@ async function getCameras() {
                 device.kind === "videoinput"
         );
 
-
     console.log(
         "Detected cameras:",
         cameras
     );
 
-
     return cameras;
 
 }
 
-
-/* =========================================================
-   STOP STREAM
-========================================================= */
-
 async function stopCamera() {
-
-    /*
-       Increase session number.
-
-       This invalidates any old async
-       camera request.
-    */
 
     cameraSession++;
 
-
     streaming = false;
-
 
     if (
         animationFrameId !== null
@@ -626,20 +463,16 @@ async function stopCamera() {
 
     }
 
-
     const oldStream =
         currentStream;
 
-
     currentStream =
         null;
-
 
     if (oldStream) {
 
         const tracks =
             oldStream.getTracks();
-
 
         tracks.forEach(track => {
 
@@ -653,15 +486,6 @@ async function stopCamera() {
 
     }
 
-
-    /*
-       Detach the stream from the video.
-
-       We don't call video.load()
-       because repeatedly resetting the
-       element can cause weird timing issues.
-    */
-
     if (
         video.srcObject
     ) {
@@ -670,7 +494,6 @@ async function stopCamera() {
             null;
 
     }
-
 
     try {
 
@@ -685,7 +508,6 @@ async function stopCamera() {
 
     }
 
-
     asciiContainer.innerText =
         "";
 
@@ -698,25 +520,13 @@ async function stopCamera() {
     streamPlaceholder.style.display =
         "flex";
 
-
     setStatus(
         "WAITING_FOR_INPUT"
     );
 
-
-    /*
-       Give Chromium time to actually release
-       the hardware camera.
-    */
-
     await sleep(800);
 
 }
-
-
-/* =========================================================
-   WAIT FOR VIDEO
-========================================================= */
 
 function waitForVideo() {
 
@@ -734,9 +544,7 @@ function waitForVideo() {
 
             }
 
-
             let timeout;
-
 
             function cleanup() {
 
@@ -754,7 +562,6 @@ function waitForVideo() {
 
             }
 
-
             function success() {
 
                 cleanup();
@@ -762,7 +569,6 @@ function waitForVideo() {
                 resolve();
 
             }
-
 
             function failure() {
 
@@ -776,18 +582,15 @@ function waitForVideo() {
 
             }
 
-
             video.addEventListener(
                 "loadedmetadata",
                 success
             );
 
-
             video.addEventListener(
                 "error",
                 failure
             );
-
 
             timeout =
                 setTimeout(() => {
@@ -807,29 +610,17 @@ function waitForVideo() {
 
 }
 
-
-/* =========================================================
-   START CAMERA
-========================================================= */
-
 async function startCamera() {
-
-    /*
-       Every startup gets its own ID.
-    */
 
     const session =
         ++cameraSession;
-
 
     setStatus(
         "CHECKING_CAMERA..."
     );
 
-
     const cameras =
         await getCameras();
-
 
     if (
         cameras.length === 0
@@ -842,16 +633,9 @@ async function startCamera() {
 
     }
 
-
     console.log(
         `Found ${cameras.length} camera(s)`
     );
-
-
-    /*
-       Make absolutely sure an old stream
-       isn't alive.
-    */
 
     if (currentStream) {
 
@@ -859,27 +643,15 @@ async function startCamera() {
 
     }
 
-
     await sleep(500);
 
-
-    /*
-       Try multiple times.
-    */
-
     let lastError = null;
-
 
     for (
         let attempt = 1;
         attempt <= 3;
         attempt++
     ) {
-
-        /*
-           If user disconnected while we were
-           waiting, abandon this request.
-        */
 
         if (
             session !== cameraSession
@@ -893,13 +665,11 @@ async function startCamera() {
 
         }
 
-
         try {
 
             setStatus(
                 `STARTING_CAMERA... [${attempt}/3]`
             );
-
 
             const stream =
                 await navigator.mediaDevices.getUserMedia({
@@ -918,20 +688,9 @@ async function startCamera() {
 
                 });
 
-
-            /*
-               User may have clicked disconnect
-               while getUserMedia was waiting.
-            */
-
             if (
                 session !== cameraSession
             ) {
-
-                console.log(
-                    "Old camera request returned late"
-                );
-
 
                 stream
                     .getTracks()
@@ -940,15 +699,12 @@ async function startCamera() {
                             track.stop()
                     );
 
-
                 return;
 
             }
 
-
             const tracks =
                 stream.getVideoTracks();
-
 
             if (
                 tracks.length === 0
@@ -961,7 +717,6 @@ async function startCamera() {
                             track.stop()
                     );
 
-
                 throw new DOMException(
                     "No video track",
                     "NotFoundError"
@@ -969,20 +724,13 @@ async function startCamera() {
 
             }
 
-
             console.log(
                 "Using camera:",
                 tracks[0].label
             );
 
-
             currentStream =
                 stream;
-
-
-            /*
-               Detect unexpected camera disconnect.
-            */
 
             tracks[0].onended = () => {
 
@@ -995,7 +743,6 @@ async function startCamera() {
                         "Camera unexpectedly disconnected"
                     );
 
-
                     stopCamera();
 
                     setStatus(
@@ -1006,13 +753,10 @@ async function startCamera() {
 
             };
 
-
             video.srcObject =
                 stream;
 
-
             await waitForVideo();
-
 
             if (
                 session !== cameraSession
@@ -1029,16 +773,9 @@ async function startCamera() {
 
             }
 
-
             await video.play();
 
-
-            /*
-               Small stabilization period.
-            */
-
             await sleep(300);
-
 
             if (
                 video.videoWidth === 0 ||
@@ -1046,40 +783,33 @@ async function startCamera() {
             ) {
 
                 throw new Error(
-                    "Camera started but returned no video dimensions"
+                    "Camera returned no video dimensions"
                 );
 
             }
 
-
             streaming =
                 true;
-
 
             streamPlaceholder.style.display =
                 "none";
 
-
             camBtnText.innerText =
                 "Disconnect Camera";
-
 
             setStatus(
                 "STREAM_ACTIVE [OK]"
             );
-
 
             frameCount = 0;
 
             lastTime =
                 performance.now();
 
-
             animationFrameId =
                 requestAnimationFrame(
                     processFrame
                 );
-
 
             return;
 
@@ -1088,16 +818,10 @@ async function startCamera() {
             lastError =
                 error;
 
-
             console.warn(
                 `Camera attempt ${attempt} failed:`,
                 error
             );
-
-
-            /*
-               Clean failed stream.
-            */
 
             if (
                 currentStream
@@ -1115,10 +839,8 @@ async function startCamera() {
 
             }
 
-
             video.srcObject =
                 null;
-
 
             if (
                 error.name ===
@@ -1129,7 +851,6 @@ async function startCamera() {
 
             }
 
-
             if (
                 error.name ===
                 "NotFoundError"
@@ -1139,7 +860,6 @@ async function startCamera() {
 
             }
 
-
             if (
                 attempt < 3
             ) {
@@ -1147,7 +867,6 @@ async function startCamera() {
                 setStatus(
                     `CAMERA_BUSY_RETRYING... [${attempt}/3]`
                 );
-
 
                 await sleep(1500);
 
@@ -1157,21 +876,11 @@ async function startCamera() {
 
     }
 
-
     throw lastError;
 
 }
 
-
-/* =========================================================
-   MAIN BUTTON
-========================================================= */
-
 async function toggleCamera() {
-
-    /*
-       This is the important anti-double-click lock.
-    */
 
     if (
         cameraBusy
@@ -1185,20 +894,13 @@ async function toggleCamera() {
 
     }
 
-
     cameraBusy =
         true;
-
 
     toggleCamBtn.disabled =
         true;
 
-
     try {
-
-        /*
-           DISCONNECT
-        */
 
         if (
             streaming ||
@@ -1209,25 +911,13 @@ async function toggleCamera() {
                 "DISCONNECTING_CAMERA..."
             );
 
-
             await stopCamera();
 
-
-            /*
-               Extra cooldown after stopping.
-            */
-
             await sleep(700);
-
 
             return;
 
         }
-
-
-        /*
-           INITIALIZE
-        */
 
         await startCamera();
 
@@ -1238,9 +928,7 @@ async function toggleCamera() {
             error
         );
 
-
         await stopCamera();
-
 
         if (
             error.name ===
@@ -1250,7 +938,6 @@ async function toggleCamera() {
             setStatus(
                 "PERMISSION_DENIED"
             );
-
 
             alert(
                 "Camera permission was denied. Allow camera access and try again."
@@ -1267,7 +954,6 @@ async function toggleCamera() {
                 "NO_CAMERA_FOUND"
             );
 
-
             alert(
                 "No webcam was detected."
             );
@@ -1282,7 +968,6 @@ async function toggleCamera() {
             setStatus(
                 "CAMERA_BUSY"
             );
-
 
             alert(
                 "The webcam could not be started. Another application may be using it. Close Discord, OBS, Zoom, Teams, Camera, etc and try again."
@@ -1299,7 +984,6 @@ async function toggleCamera() {
                 "SECURITY_ERROR"
             );
 
-
             alert(
                 "The browser blocked camera access. Make sure the website is using HTTPS."
             );
@@ -1312,7 +996,6 @@ async function toggleCamera() {
                 "CAMERA_ERROR"
             );
 
-
             alert(
                 "Camera error: " +
                 (error.message || error)
@@ -1322,17 +1005,10 @@ async function toggleCamera() {
 
     } finally {
 
-        /*
-           Small cooldown so the user cannot
-           instantly start another operation.
-        */
-
         await sleep(500);
-
 
         cameraBusy =
             false;
-
 
         toggleCamBtn.disabled =
             false;
@@ -1340,11 +1016,6 @@ async function toggleCamera() {
     }
 
 }
-
-
-/* =========================================================
-   ASCII PROCESSING
-========================================================= */
 
 function processFrame() {
 
@@ -1356,7 +1027,6 @@ function processFrame() {
         return;
 
     }
-
 
     if (
         video.videoWidth === 0 ||
@@ -1372,13 +1042,10 @@ function processFrame() {
 
     }
 
-
     const now =
         performance.now();
 
-
     frameCount++;
-
 
     if (
         now - lastTime >= 1000
@@ -1390,10 +1057,8 @@ function processFrame() {
                 (now - lastTime)
             );
 
-
         fpsCounter.innerText =
             `FPS: ${fps}`;
-
 
         frameCount =
             0;
@@ -1403,17 +1068,14 @@ function processFrame() {
 
     }
 
-
     const width =
         video.videoWidth;
 
     const height =
         video.videoHeight;
 
-
     const aspectRatio =
         height / width;
-
 
     const rows =
         Math.max(
@@ -1425,13 +1087,11 @@ function processFrame() {
             )
         );
 
-
     canvas.width =
         cols;
 
     canvas.height =
         rows;
-
 
     ctx.drawImage(
         video,
@@ -1441,7 +1101,6 @@ function processFrame() {
         rows
     );
 
-
     const image =
         ctx.getImageData(
             0,
@@ -1450,10 +1109,8 @@ function processFrame() {
             rows
         ).data;
 
-
     let ascii =
         "";
-
 
     for (
         let y = 0;
@@ -1470,7 +1127,6 @@ function processFrame() {
             const index =
                 (y * cols + x) * 4;
 
-
             const r =
                 image[index];
 
@@ -1480,12 +1136,10 @@ function processFrame() {
             const b =
                 image[index + 2];
 
-
             const brightness =
                 0.299 * r +
                 0.587 * g +
                 0.114 * b;
-
 
             const charIndex =
                 Math.floor(
@@ -1493,26 +1147,18 @@ function processFrame() {
                     (charRamp.length - 1)
                 );
 
-
             ascii +=
                 charRamp[charIndex];
 
         }
-
 
         ascii +=
             "\n";
 
     }
 
-
-    currentSnapshotText =
-        ascii;
-
-
     asciiContainer.innerText =
         ascii;
-
 
     animationFrameId =
         requestAnimationFrame(
@@ -1520,99 +1166,6 @@ function processFrame() {
         );
 
 }
-
-
-/* =========================================================
-   SNAPSHOT
-========================================================= */
-
-function takeSnapshot() {
-
-    if (
-        !streaming
-    ) {
-
-        alert(
-            "Please initialize the camera first."
-        );
-
-        return;
-
-    }
-
-
-    snapshotPreview.innerText =
-        currentSnapshotText;
-
-
-    snapshotModal.classList.remove(
-        "hidden"
-    );
-
-}
-
-
-function closeSnapshotModal() {
-
-    snapshotModal.classList.add(
-        "hidden"
-    );
-
-}
-
-
-function downloadSnapshot() {
-
-    const blob =
-        new Blob(
-            [currentSnapshotText],
-            {
-                type: "text/plain"
-            }
-        );
-
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const link =
-        document.createElement(
-            "a"
-        );
-
-
-    link.href =
-        url;
-
-
-    link.download =
-        `ascii-snapshot-${Date.now()}.txt`;
-
-
-    document.body.appendChild(
-        link
-    );
-
-
-    link.click();
-
-
-    link.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-}
-
-
-/* =========================================================
-   FULLSCREEN
-========================================================= */
 
 function toggleFullscreen() {
 
@@ -1638,11 +1191,6 @@ function toggleFullscreen() {
 
 }
 
-
-/* =========================================================
-   CAMERA DEVICE CHANGES
-========================================================= */
-
 if (
     navigator.mediaDevices &&
     navigator.mediaDevices.addEventListener
@@ -1656,7 +1204,6 @@ if (
 
                 const cameras =
                     await getCameras();
-
 
                 console.log(
                     "Camera devices changed:",
@@ -1677,21 +1224,14 @@ if (
 
 }
 
-
-/* =========================================================
-   PAGE CLEANUP
-========================================================= */
-
 window.addEventListener(
     "pagehide",
     () => {
 
         cameraSession++;
 
-
         streaming =
             false;
-
 
         if (
             animationFrameId !== null
@@ -1702,7 +1242,6 @@ window.addEventListener(
             );
 
         }
-
 
         if (
             currentStream
@@ -1716,7 +1255,6 @@ window.addEventListener(
                 );
 
         }
-
 
         if (
             video.srcObject
@@ -1733,11 +1271,6 @@ window.addEventListener(
 
     }
 );
-
-
-/* =========================================================
-   INITIALIZE UI
-========================================================= */
 
 changePalette();
 
